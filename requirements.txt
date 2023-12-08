@@ -1,1 +1,2 @@
 Requirements:
+ffmpeg.exe, ffplay.exe, ffprobe.exe (can be downloaded from https://ffmpeg.org/download.html)
