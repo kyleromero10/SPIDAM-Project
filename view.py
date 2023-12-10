@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import librosa.util
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.signal import spectrogram
+plt.switch_backend("TkAgg")
 
 class AudioView:
     def __init__(self, root, controller):
