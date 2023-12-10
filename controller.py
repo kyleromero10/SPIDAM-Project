@@ -6,7 +6,7 @@ from tkinter import filedialog
 from scipy.io import wavfile
 import librosa
 import numpy as np
-import os  # Add this line to import the 'os' module
+import os
 import subprocess
 import matplotlib.pyplot as plt
 from pydub import AudioSegment
@@ -34,8 +34,8 @@ class AudioController:
 
     def load_audio_file(self, file_path):
         if not file_path.lower().endswith('.wav'):
-            ffmpeg_path = os.path.join(os.path.dirname(__file__), 'ffmpeg.exe')  # Adjust the executable name if needed
-            output_path = os.path.join(os.path.dirname(file_path), 'output.wav')  # Adjust the output path as needed
+            ffmpeg_path = os.path.join(os.path.dirname(__file__), 'ffmpeg.exe')
+            output_path = os.path.join(os.path.dirname(file_path), 'output.wav')
 
             # Use ffmpeg to convert the input file to WAV and remove metadata
             command = [ffmpeg_path, '-i', file_path, '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '1', output_path]
@@ -94,13 +94,11 @@ class AudioController:
             t_half = np.argmax(power_sum > 0.5 * power_sum[-1])
             rt60 = 2 * (len(autocorr) - t_half) / sample_rate
 
-        # Create an array with RT60 values for each time point
         rt60_array = 2 * (len(autocorr) - np.arange(len(autocorr))) / sample_rate
 
         return rt60_array
 
     def get_frequency_ranges(self, sample_rate):
-        # Define your frequency bands (adjust the values as needed)
         low_freqs = np.arange(0, 1000)  # Adjust the upper limit as needed
         mid_freqs = np.arange(1000, 5000)  # Adjust the upper limit as needed
         high_freqs = np.arange(5000, sample_rate / 2)  # Adjust the lower and upper limits as needed
@@ -125,12 +123,8 @@ class AudioController:
 
         self.model.set_rt60_values(rt60_low, rt60_mid, rt60_high)
 
-
-
-        # Convert to numpy arrays before passing to view
         self.view.display_rt60_values(np.array(rt60_low), np.array(rt60_mid), np.array(rt60_high),
                                       self.merge_rt60_values, self.unmerge_rt60_values)
-
 
     def merge_rt60_values(self, rt60_low, rt60_mid, rt60_high):
         # Create a new figure for the merged graph
@@ -141,37 +135,36 @@ class AudioController:
         plt.plot(rt60_mid, label='Mid Frequency', color='green')
         plt.plot(rt60_high, label='High Frequency', color='red')
 
-        # Set title and labels for the merged graph
         plt.title('Merged RT60 for Low, Mid, High Frequencies')
         plt.xlabel('Time (seconds)')
         plt.ylabel('Power (dB)')
         plt.legend()
 
-        # Show the merged plot
+        # Calculate the RT60 difference
+        avg_rt60 = np.mean([np.mean(rt60_low), np.mean(rt60_mid), np.mean(rt60_high)])
+        rt60_difference = avg_rt60 - 0.5
+
+        plt.text(0.5, 0.1, f'RT60 Difference: {rt60_difference:.2f} seconds', transform=plt.gca().transAxes,
+                 color='black', fontsize=12, fontweight='bold', ha='center')
+
         plt.show()
 
-
     def compute_highest_resonance(self, audio_data, sample_rate):
-        # Compute the Fast Fourier Transform (FFT)
+        # Compute the FFT
         fft_result = np.fft.fft(audio_data)
 
-        # Calculate the frequencies corresponding to the FFT result
         frequencies = np.fft.fftfreq(len(fft_result), d=1 / sample_rate)
 
-        # Find the index of the maximum amplitude (excluding DC component)
         max_amplitude_index = np.argmax(np.abs(fft_result[1:])) + 1
 
-        # Return the frequency corresponding to the maximum amplitude
         return frequencies[max_amplitude_index]
 
     def unmerge_rt60_values(self, rt60_low, rt60_mid, rt60_high):
-        # Call the view's display_rt60_values method
         self.view.display_rt60_values(rt60_low, rt60_mid, rt60_high, self.merge_rt60_values, self.unmerge_rt60_values)
 
     def get_audio_duration(self):
         # Check if audio_data is available in the model
         if self.model.audio_data is not None:
-            # Convert audio_data to Pydub AudioSegment
             audio_segment = AudioSegment(
                 data=self.model.audio_data.tobytes(),
                 sample_width=self.model.audio_data.dtype.itemsize,
@@ -180,10 +173,37 @@ class AudioController:
             )
             return audio_segment.duration_seconds
         else:
-            return 0  # Return 0 if audio_data is not available
+            return 0
+
+    def calculate_and_display_rt60_difference(self):
+        # Get the RT60 values from the model
+        rt60_low = np.atleast_1d(self.model.rt60_low)
+        rt60_mid = np.atleast_1d(self.model.rt60_mid)
+        rt60_high = np.atleast_1d(self.model.rt60_high)
+
+        # Take the average of the RT60 values
+        avg_rt60 = np.mean([np.mean(rt60_low), np.mean(rt60_mid), np.mean(rt60_high)])
+
+        # Calculate the difference from the optimum reverb time (0.5 seconds)
+        rt60_difference = avg_rt60 - 0.5
+
+        self.view.display_rt60_values(rt60_low, rt60_mid, rt60_high, self.merge_rt60_values, self.unmerge_rt60_values,
+                                      rt60_difference)
+
+    def show_spectrogram(self):
+        if self.model.audio_data is not None and self.model.sample_rate is not None:
+            audio_data = self.model.audio_data
+            sample_rate = self.model.sample_rate
+            self.view.show_spectrogram(audio_data, sample_rate)
+        else:
+            print("Error: No audio data available.")
 
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.title("Scientific Python Interactive Data Acoustic Modeling")
+
+    root.geometry("400x200")
+
     app = AudioController(root)
     root.mainloop()
