@@ -1,6 +1,8 @@
 # SPIDAM
  
-This program measures and analyzes reverberation time in a given file (if the file is not .wav, it will be converted to .wav)
+This program measures and analyzes reverberation time in a given file (if the file is not .wav, it will be converted to .wav) and plot the data as multiple different graphs.
+
+This program exists so that users can graph audio files and use the data as needed.
 
 ## Usage
 
