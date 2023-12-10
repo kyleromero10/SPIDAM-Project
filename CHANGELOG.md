@@ -4,3 +4,4 @@
 1.1.0 Build: Program plots RT60 graph for Low, Mid, High frequencies
 1.1.1 Build: Program can merge all three plots
 1.1.2 Build: Program displays RT60 difference
+1.2.0 Build: Spectrogram button/function added. Program meets all requirements.
