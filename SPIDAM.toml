@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SPIDAM"
+version = "1.2.1"
+authors = [
+  { name="Kyle Romero", email="kromero2917@floridapoly.edu" },
+]
+description = "SPIDAM project, see repository here: https://github.com/kyleromero10/SPIDAM-Project"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
