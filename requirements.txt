@@ -1,4 +1,17 @@
-Requirements:
-ffmpeg.exe, ffplay.exe, ffprobe.exe (can be downloaded from https://ffmpeg.org/download.html)
+Requirements (Can all be downloaded from https://ffmpeg.org/download.html)
+- ffmpeg.exe
+- ffplay.exe
+- ffprobe.exe 
 
-Python libraries: tkinter, numpy, matplotlib.pyplot, librosa, librosa.util, matplotlib.backends.backend_tkagg, scipy.signal, scipy.io, os, subprocess, pydub
+Python libraries
+- tkinter
+- numpy
+- matplotlib.pyplot
+- librosa
+- librosa.util
+- matplotlib.backends.backend_tkagg
+- scipy.signal
+- scipy.io
+- os
+- subprocess
+- pydub
